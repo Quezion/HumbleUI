@@ -188,3 +188,18 @@
   (let [c (cursors cursor)]
     (assert (some? c) (str "Unknown cursor " cursor))
     (.setMouseCursor window c)))
+
+(defn restore
+  [^Window window]
+  (.restore window)
+  window)
+
+(defn focus
+  [^Window window]
+  (.focus window)
+  window)
+
+(defn steal-focus
+  [^Window window]
+  (.stealFocus window)
+  window)
