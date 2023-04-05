@@ -121,6 +121,10 @@
   (.setTitle window title)
   window)
 
+(defn set-titlebar-visible [^Window window ^Boolean value]
+  (.setTitlebarVisible window value)
+  window)
+
 (defn set-icon [^Window window ^String path]
   (.setIcon window (io/file path))
   window)
@@ -199,7 +203,11 @@
   (.focus window)
   window)
 
-(defn steal-focus
+(defn bring-to-front
   [^Window window]
-  (.stealFocus window)
+  (.bringToFront window)
   window)
+
+(defn front?
+  [^Window window]
+  (.isFront window))
