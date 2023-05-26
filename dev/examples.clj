@@ -17,6 +17,7 @@
     [examples.grid]
     [examples.image-snapshot]
     [examples.label]
+    [examples.paragraph]
     [examples.scroll]
     [examples.settings]
     [examples.state :as state]
@@ -65,6 +66,7 @@
     "Grid" examples.grid/ui
     "Image Snapshot" examples.image-snapshot/ui
     "Label" examples.label/ui
+    "Paragraph" examples.paragraph/ui
     "Scroll" examples.scroll/ui
     "Settings" examples.settings/ui
     "Slider" examples.slider/ui
@@ -116,7 +118,7 @@
 
 (defn -main [& args]
   (ui/start-app!
-    (let [screen (last (app/screens))]
+    (let [screen (app/primary-screen)]
       (reset! state/*window 
         (ui/window
           {:title    "Humble 🐝 UI"

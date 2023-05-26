@@ -4,7 +4,8 @@
     [io.github.humbleui.canvas :as canvas]
     [io.github.humbleui.core :as core]
     [io.github.humbleui.debug :as debug]
-    [io.github.humbleui.event :as event])
+    [io.github.humbleui.event :as event]
+    [io.github.humbleui.protocols :as protocols])
   (:import
     [io.github.humbleui.jwm App MouseCursor Platform TextInputClient Window ZOrder]
     [io.github.humbleui.jwm.skija LayerD3D12Skija LayerGLSkija LayerMetalSkija]
@@ -47,33 +48,33 @@
                                type (:event e)]
                            (when (not= :frame-skija type)
                              (debug/on-start :event))
-                           
+
                            (when on-event
                              (when e
                                (core/catch-and-log
                                  (on-event window e))))
-                           
+
                            (case type
                              :window-close-request
                              (when on-close-request
                                (core/catch-and-log
                                  (on-close-request window)))
-                             
+
                              :window-close
                              (when on-close
                                (core/catch-and-log
                                  (on-close)))
-                             
+
                              :window-screen-change
                              (when on-screen-change
                                (core/catch-and-log
                                  (on-screen-change window)))
-                             
+
                              :window-resize
                              (when on-resize
                                (core/catch-and-log
                                  (on-resize window)))
-                             
+
                              :frame-skija
                              (when on-paint
                                (let [canvas (.getCanvas ^Surface (:surface e))
@@ -82,7 +83,7 @@
                                    (debug/on-start :paint)
                                    (on-paint window canvas)
                                    (debug/on-end :paint)
-                                   (when @debug/*enabled?
+                                   (when @protocols/*debug?
                                      (canvas/with-canvas canvas
                                        (let [scale (scale window)
                                              rect  (content-rect window)]
@@ -98,19 +99,42 @@
                                      (.clear canvas (unchecked-int 0xFFCC3333)))
                                    (finally
                                      (.restoreToCount canvas layer)))))
-                             
+
                              nil)
                            (when (not= :frame-skija type)
                              (debug/on-end :event)))))
+        input-client-fn #(when on-event
+                           (on-event window {:event :get-text-input-client}))
         input-client (reify TextInputClient
                        (getRectForMarkedRange [_ selection-start selection-end]
                          (or
-                           (when on-event
-                             (core/catch-and-log
-                               (on-event window {:event           :get-rect-for-marked-range
-                                                 :selection-start selection-start
-                                                 :selection-end   selection-end})))
-                           (IRect/makeXYWH 0 0 0 0))))]
+                           (core/catch-and-log
+                             (when-some [{:keys [^TextInputClient client ctx]} (input-client-fn)]
+                               (binding [core/*ctx* ctx]
+                                 (.getRectForMarkedRange client selection-start selection-end))))
+                           (IRect/makeXYWH 0 0 0 0)))
+
+                       (getSelectedRange [_]
+                         (or
+                           (core/catch-and-log
+                             (when-some [{:keys [^TextInputClient client ctx]} (input-client-fn)]
+                               (binding [core/*ctx* ctx]
+                                 (.getSelectedRange client))))
+                           (core/irange -1 -1)))
+
+                       (getMarkedRange [_]
+                         (or
+                           (core/catch-and-log
+                             (when-some [{:keys [^TextInputClient client ctx]} (input-client-fn)]
+                               (binding [core/*ctx* ctx]
+                                 (.getMarkedRange client))))
+                           (core/irange -1 -1)))
+
+                       (getSubstring [_ start end]
+                         (core/catch-and-log
+                           (when-some [{:keys [^TextInputClient client ctx]} (input-client-fn)]
+                             (binding [core/*ctx* ctx]
+                               (.getSubstring client start end))))))]
     (.setLayer window layer)
     (.setEventListener window listener)
     ; (.setTextInputEnabled window true)
