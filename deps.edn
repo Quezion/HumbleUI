@@ -2,18 +2,23 @@
  :deps
  {org.clojure/clojure                  {:mvn/version "1.11.1"}
   io.github.humbleui/types$clojure     {:mvn/version "0.2.0"}
-  io.github.humbleui/jwm               {;;:mvn/version "0.4.14"  :exclusions [io.github.humbleui/types]
-                                        ;; Uncomment below line to include a locally compiled JWM
-                                        :local/root "../JWM/target/jwm-0.0.0-SNAPSHOT.jar"}
-  io.github.humbleui/skija-windows-x64 {:mvn/version "0.109.2" :exclusions [io.github.humbleui/types]}
-  io.github.humbleui/skija-linux-x64   {:mvn/version "0.109.2" :exclusions [io.github.humbleui/types]}
-  io.github.humbleui/skija-macos-x64   {:mvn/version "0.109.2" :exclusions [io.github.humbleui/types]}
-  io.github.humbleui/skija-macos-arm64 {:mvn/version "0.109.2" :exclusions [io.github.humbleui/types]}}
+  io.github.humbleui/jwm               {;;:mvn/version "0.4.1i4"  :exclusions [io.github.humbleui/types]
+                                       ;; Uncomment below line to include a locally compiled JWM
+                                       :local/root "../JWM/target/jwm-0.0.0-SNAPSHOT.jar"}
+  io.github.humbleui/skija-windows-x64 {:mvn/version "0.116.1" :exclusions [io.github.humbleui/types]}
+  io.github.humbleui/skija-linux-x64   {:mvn/version "0.116.1" :exclusions [io.github.humbleui/types]}
+  io.github.humbleui/skija-macos-x64   {:mvn/version "0.116.1" :exclusions [io.github.humbleui/types]}
+  io.github.humbleui/skija-macos-arm64 {:mvn/version "0.116.1" :exclusions [io.github.humbleui/types]}}
 
  :aliases
  {:dev
-  {:extra-paths ["dev" "test"]
+  {:extra-paths ["dev"]
    :extra-deps  {org.clojure/tools.namespace {:mvn/version "1.3.0"}
-                 criterium/criterium {:mvn/version "0.4.6"}}
-   :main-opts   ["-m" "user" "--interactive"]
+                 criterium/criterium {:mvn/version "0.4.6"}
+                 com.clojure-goes-fast/clj-async-profiler {:mvn/version "1.0.3"}}
+   :jvm-opts    ["-Djdk.attach.allowAttachSelf" #_"-XX:+UnlockDiagnosticVMOptions" #_"-XX:+DebugNonSafepoints"]
+   :main-opts   ["-m" "examples"]}
+  :test
+  {:extra-paths ["test"]
+   :main-opts   ["-m" "io.github.humbleui.test"]
    :jvm-opts    ["-ea"]}}}

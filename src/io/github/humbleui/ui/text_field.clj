@@ -391,16 +391,20 @@
 
 (defmethod -edit :undo [{:keys [undo redo] :as state} _ _]
   (if-some [state' (peek undo)]
-    (assoc state'
-      :undo (pop undo)
-      :redo (conj (or redo []) (select-keys state [:text :from :to :offset])))
+    (-> state
+      (merge state')
+      (assoc
+        :undo (pop undo)
+        :redo (conj (or redo []) (select-keys state [:text :from :to :offset]))))
     state))
 
 (defmethod -edit :redo [{:keys [undo redo] :as state} _ _]
   (if-some [state' (peek redo)]
-    (assoc state'
-      :undo (conj (or undo []) (select-keys state [:text :from :to :offset]))
-      :redo (pop redo))
+    (-> state
+      (merge state')
+      (assoc
+        :undo (conj (or undo []) (select-keys state [:text :from :to :offset]))
+        :redo (pop redo)))
     state))
 
 (defn edit [state command arg]
@@ -874,7 +878,13 @@
                              
                              (core/when-case (and (not macos?) ctrl?) key
                                :a [:select-all]
-                               :z [:undo])
+                               :z [:undo]
+                               :y [:redo])
+                             
+                             (core/when-case (and (not macos?) ctrl? selection?) key
+                               :x [:copy :kill]
+                               :c [:copy]
+                               :v [:kill :paste])
                              
                              (core/when-case true key
                                :left      [:move-char-left]
