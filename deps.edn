@@ -2,11 +2,13 @@
  :deps
  {org.clojure/clojure                  {:mvn/version "1.11.1"}
   io.github.humbleui/types$clojure     {:mvn/version "0.2.0"}
-  io.github.humbleui/jwm               {;;:mvn/version "0.4.15"  ;;:exclusions [io.github.humbleui/types]
+  io.github.humbleui/jwm               {:exclusions [io.github.humbleui/types]
+                                        :mvn/version "0.4.16"
                                         ;; Uncomment below line to include a locally compiled JWM
-                                        :local/root "../JWM/target/jwm-0.0.0-SNAPSHOT.jar"
+                                        ;;:local/root "../JWM/target/jwm-0.0.0-SNAPSHOT.jar"
+                                        ;; Uncomment below to use public build -- no support for Mac isFront
                                         ;;:git/url "https://github.com:HumbleUI/JWM.git"
-                                        ;;:sha "b918d836af57a9ddfac48d23ab3bf9a88b888bd3"
+                                        ;;:sha "3cbb00a"
                                         }
   io.github.humbleui/skija-windows-x64 {:mvn/version "0.116.1" :exclusions [io.github.humbleui/types]}
   io.github.humbleui/skija-linux-x64   {:mvn/version "0.116.1" :exclusions [io.github.humbleui/types]}
